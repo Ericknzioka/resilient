@@ -1,0 +1,70 @@
+[
+    {
+        "name": "nick",
+        "phone": "0743444219",
+        "items": [
+            {
+                "id": "bakery-single deck oven.jpg",
+                "name": "single deck oven.jpg",
+                "price": 10000,
+                "quantity": 1
+            }
+        ],
+        "total": 10000,
+        "date": "2025-10-09 21:10:19"
+    },
+    {
+        "name": "cate",
+        "phone": "0743444219",
+        "items": [
+            {
+                "id": "bakery-single deck oven.jpg",
+                "name": "single deck oven.jpg",
+                "price": 10000,
+                "quantity": 1
+            },
+            {
+                "id": "kitchen-equipment-deepfryer.jpg",
+                "name": "deepfryer.jpg",
+                "price": 10000,
+                "quantity": 1
+            }
+        ],
+        "total": 20000,
+        "date": "2025-10-09 21:14:22"
+    },
+    {
+        "name": "accadias",
+        "phone": "0789665678",
+        "items": [
+            {
+                "id": "kitchen-equipment-deepfryer.jpg",
+                "name": "deepfryer.jpg",
+                "price": 10000,
+                "quantity": 1
+            }
+        ],
+        "total": 10000,
+        "date": "2025-10-09 22:06:07"
+    },
+    {
+        "name": "jonte",
+        "phone": "0744553322",
+        "items": [
+            {
+                "id": "kitchen-equipment-deepfryer.jpg",
+                "name": "deepfryer.jpg",
+                "price": 10000,
+                "quantity": 1
+            },
+            {
+                "id": "kitchen-equipment-closed cabinet.jpg",
+                "name": "closed cabinet.jpg",
+                "price": 10000,
+                "quantity": 1
+            }
+        ],
+        "total": 20000,
+        "date": "2025-10-14 07:31:40"
+    }
+]
