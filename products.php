@@ -1,9 +1,16 @@
 <?php
-include 'config.php';
+require_once 'config.php';
 
-// Fetch products from database
-$stmt = $pdo->query("SELECT * FROM products ORDER BY created_at DESC");
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Initialize PDO and fetch products
+try {
+    $pdo = getPDO();
+    $stmt = $pdo->query("SELECT * FROM products ORDER BY created_at DESC");
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    // If DB is unavailable, show empty product list and log the error
+    error_log('Products fetch failed: ' . $e->getMessage());
+    $products = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -84,8 +91,17 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach($products as $product): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card product-card h-100">
-                            <?php if($product['image']): ?>
-                                <img src="uploads/<?php echo $product['image']; ?>" class="card-img-top" alt="<?php echo $product['name']; ?>" style="height: 200px; object-fit: cover;">
+                            <?php if(!empty($product['image'])): ?>
+                                <?php
+                                    // If image already contains a path use it, otherwise use category subfolder
+                                    $imgPath = $product['image'];
+                                    if (strpos($imgPath, '/') === false && !empty($product['category'])) {
+                                        $imgPath = 'uploads/' . $product['category'] . '/' . $imgPath;
+                                    } else {
+                                        $imgPath = 'uploads/' . $imgPath;
+                                    }
+                                ?>
+                                <img src="<?php echo htmlspecialchars($imgPath); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>" style="height: 200px; object-fit: cover;">
                             <?php else: ?>
                                 <img src="https://via.placeholder.com/300x200/0d6efd/ffffff?text=No+Image" class="card-img-top" alt="No Image">
                             <?php endif; ?>

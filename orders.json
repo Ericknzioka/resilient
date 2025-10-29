@@ -66,5 +66,53 @@
         ],
         "total": 20000,
         "date": "2025-10-14 07:31:40"
+    },
+    {
+        "name": "glory",
+        "phone": "0743444219",
+        "items": [
+            {
+                "id": "kitchen-equipment-closed cabinet.jpg",
+                "name": "closed cabinet.jpg",
+                "price": 30000,
+                "quantity": 1
+            },
+            {
+                "id": "kitchen-equipment-scrub sink.jpg",
+                "name": "scrub sink.jpg",
+                "price": 35000,
+                "quantity": 1
+            }
+        ],
+        "total": 65000,
+        "date": "2025-10-14 19:30:55"
+    },
+    {
+        "name": "mbungua",
+        "phone": "0788907654",
+        "items": [
+            {
+                "id": "kitchen-equipment-coffee grinder.jpg",
+                "name": "coffee grinder.jpg",
+                "price": 95000,
+                "quantity": 1
+            }
+        ],
+        "total": 95000,
+        "date": "2025-10-14 21:15:39"
+    },
+    {
+        "name": "mutu",
+        "phone": "0789654321",
+        "items": [
+            {
+                "id": "kitchen-equipment-burner gas cooker.jpg",
+                "name": "burner gas cooker.jpg",
+                "price": 25000,
+                "quantity": 2
+            }
+        ],
+        "total": 50000,
+        "date": "2025-10-15 13:36:46"
     }
 ]

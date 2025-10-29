@@ -10,6 +10,57 @@ try {
     $featuredProducts = [];
     error_log("Database error: " . $e->getMessage());
 }
+
+// Map image filenames to readable product names for each category
+function getProductName($folder, $img) {
+    $map = [
+        'bakery' => [
+            'bainmarie.jpg' => 'Bain Marie',
+            'combined oven cooker.jpg' => 'Combined Oven Cooker',
+            'deck oven.jpg' => 'Deck Oven',
+            'single deck oven.jpg' => 'Single Deck Oven',
+        ],
+        'butchery' => [
+            '3 manual meat mincer.jpg' => '3 Manual Meat Mincer',
+            'meat and grill.jpg' => 'Meat and Grill',
+            'meat grill.jpg' => 'Meat Grill',
+            'ventilated fridge.jpg' => 'Ventilated Fridge',
+        ],
+        'custom-fabrications' => [
+            'perforated rack.jpg' => 'Perforated Rack',
+            'storage rack.jpg' => 'Storage Rack',
+            'toy boy trolley.jpg' => 'Toy Boy Trolley',
+            'working table with over shelves.jpg' => 'Working Table with Over Shelves',
+        ],
+        'kitchen-equipment' => [
+            'burner gas cooker.jpg' => 'Burner Gas Cooker',
+            'closed cabinet.jpg' => 'Closed Cabinet',
+            'coffee grinder.jpg' => 'Coffee Grinder',
+            'combined cooker 4 burner and a grill.jpg' => 'Combined Cooker 4 Burner and a Grill',
+            'combined cooking unit.jpg' => 'Combined Cooking Unit',
+            'combined.jpg' => 'Combined Cooker',
+            'commercial fridge.jpg' => 'Commercial Fridge',
+            'deepfryer.jpg' => 'Deep Fryer',
+            'double sink.jpg' => 'Double Sink',
+            'gas cooker with double bowl.jpg' => 'Gas Cooker with Double Bowl',
+            'grease trap.jpg' => 'Grease Trap',
+            'hospital sluice sink.jpg' => 'Hospital Sluice Sink',
+            'kitchen hood structure.jpg' => 'Kitchen Hood Structure',
+            'scrub sink.jpg' => 'Scrub Sink',
+            'single sink.jpg' => 'Single Sink',
+            'sluice sink.jpg' => 'Sluice Sink',
+            'steel sluice sink.jpg' => 'Steel Sluice Sink',
+        ],
+        'milk' => [
+            'ventilated fridge.jpg' => 'Ventilated Fridge',
+        ],
+        'water' => [
+            'ventilated fridge.jpg' => 'Ventilated Fridge',
+        ],
+    ];
+    $imgLower = strtolower($img);
+    return $map[$folder][$imgLower] ?? pathinfo($img, PATHINFO_FILENAME);
+}
 ?>
 
 <!DOCTYPE html>
@@ -134,12 +185,12 @@ try {
                 <div class="col-md-8 mx-auto">
                     <div class="bg-white p-3 rounded shadow-sm d-inline-block" style="font-size:1.2rem;">
                         <span class="fw-bold text-primary">Welcome to Resilient Modern Kitchen Online Shopping Store!</span>
-                        <p class="mb-0" style="font-size:1rem;">Shop high-quality, durable kitchen equipment and furniture for commercial and residential use. Enjoy a seamless shopping experience with fast delivery and professional support.</p>
+                        <p class="mb-0" style="font-size:1rem;">Shop high-quality, stainless steel, durable kitchen equipment and furniture for commercial and residential use. Enjoy a seamless shopping experience with fast delivery and professional support.</p>
                     </div>
                 </div>
             </div>
             <h1 class="display-6 fw-bold mt-4">Professional Kitchen Equipment</h1>
-            <p class="lead mb-4">High-quality, durable kitchen furniture and equipment for restaurants, hotels, and homes</p>
+            <p class="lead mb-4">High-quality,stainless steel durable kitchen furniture and equipment for restaurants, hotels, and homes</p>
             <a href="products.php" class="btn btn-light btn-lg px-5 py-3">Shop Now</a>
         </div>
     </section>
@@ -151,7 +202,7 @@ try {
                 <div class="col-md-8">
                     <div class="bg-white p-4 rounded shadow-sm">
                         <h2 class="fw-bold mb-3 text-primary">About Resilient Kitchen</h2>
-                        <p class="lead mb-3">We provide high-quality, durable kitchen equipment and furniture for commercial and residential use.</p>
+                        <p class="lead mb-3">We provide high-quality, stainless steel durable kitchen equipment and furniture for commercial and residential use.</p>
                         <p class="mb-0">With years of experience in the industry, we understand the needs of professional chefs and home cooks alike. Our products are designed to withstand the rigors of daily use while maintaining aesthetic appeal.</p>
                     </div>
                 </div>
@@ -178,80 +229,37 @@ try {
                 </div>
             </nav>
             <!-- Main Content -->
-            <main class="col-md-10 ms-sm-auto px-4">
-                <!-- Category Galleries -->
-                <?php
-                $categories = [
-                    'kitchen-equipment' => 'Kitchen Equipment',
-                    'coldrooms' => 'Coldrooms',
-                    'custom-fabrications' => 'Custom Fabrications',
-                    'water' => 'Water',
-                    'milk' => 'Milk',
-                    'butchery' => 'Butchery',
-                    'bakery' => 'Bakery'
-                ];
-                foreach ($categories as $folder => $label):
-                    $dir = __DIR__ . "/uploads/$folder";
-                    $images = is_dir($dir) ? array_filter(scandir($dir), function($f) {
-                        return !is_dir($f) && preg_match('/\.(jpg|jpeg|png)$/i', $f);
-                    }) : [];
-                ?>
-                <section class="py-4" id="<?php echo $folder; ?>">
-                    <h3 class="mb-4 text-primary"><?php echo $label; ?></h3>
-                    <div class="row">
-                        <?php if(count($images) > 0): ?>
-                            <?php foreach($images as $img): ?>
+                <main class="col-md-10 ms-sm-auto px-4">
+                    <!-- Product Grid from Database -->
+                    <?php
+                    $stmt = $pdo->query('SELECT * FROM products ORDER BY created_at DESC');
+                    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $categories = [
+                        'kitchen-equipment' => 'Kitchen Equipment',
+                        'coldrooms' => 'Coldrooms',
+                        'custom-fabrications' => 'Custom Fabrications',
+                        'water' => 'Water',
+                        'milk' => 'Milk',
+                        'butchery' => 'Butchery',
+                        'bakery' => 'Bakery'
+                    ];
+                    foreach ($categories as $folder => $label):
+                        $catProducts = array_filter($products, function($p) use ($folder) { return $p['category'] === $folder; });
+                    ?>
+                    <section class="py-4" id="<?php echo $folder; ?>">
+                        <h3 class="mb-4 text-primary"><?php echo $label; ?></h3>
+                        <div class="row">
+                            <?php foreach($catProducts as $product): ?>
                                 <div class="col-md-4 mb-4">
                                     <div class="card product-card h-100">
-                                        <img src="uploads/<?php echo $folder . '/' . $img; ?>" class="card-img-top" alt="<?php echo $img; ?>" style="height: 200px; object-fit: cover;">
+                                        <?php if($product['image']): ?>
+                                        <img src="uploads/<?php echo $product['category'] . '/' . $product['image']; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>" style="height: auto; width: 100%; object-fit: contain;">
+                                        <?php endif; ?>
                                         <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Product</h5>
-                                            <p class="card-text flex-grow-1">High-quality <?php echo $label; ?> item.</p>
+                                            <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
                                             <div class="mt-auto">
-                                                <?php
-                                                // Set prices by category and image name
-                                                $price = 10000;
-                                                if ($folder === 'butchery') {
-                                                    if (stripos($img, 'manual meat mincer') !== false) $price = 5000;
-                                                    elseif (stripos($img, 'meat ang grill') !== false) $price = 35000;
-                                                    elseif (stripos($img, 'meat grill') !== false) $price = 7000;
-                                                    elseif (stripos($img, 'ventilated fridge') !== false) $price = 280000;
-                                                } elseif ($folder === 'bakery') {
-                                                    if (stripos($img, 'bainmrie') !== false) $price = 85000;
-                                                    elseif (stripos($img, 'combined oven cooker') !== false) $price = 250000;
-                                                    elseif (stripos($img, 'deck oven') !== false) $price = 19500;
-                                                    elseif (stripos($img, 'single deck oven') !== false) $price = 80000;
-                                                } elseif ($folder === 'custom-fabrications') {
-                                                    if (stripos($img, 'perforated rack') !== false) $price = 50000;
-                                                    elseif (stripos($img, 'storage rack') !== false) $price = 35000;
-                                                    elseif (stripos($img, 'toy boy trolley') !== false) $price = 30000;
-                                                    elseif (stripos($img, 'working table with over shelves') !== false) $price = 40000;
-                                                } elseif ($folder === 'kitchen-equipment') {
-                                                    if (stripos($img, 'burner gas cooker') !== false) $price = 25000;
-                                                    elseif (stripos($img, 'closed cabinet') !== false) $price = 30000;
-                                                    elseif (stripos($img, 'coffee grinder') !== false) $price = 95000;
-                                                    elseif (stripos($img, 'combined cooker') !== false) $price = 80000;
-                                                    elseif (stripos($img, 'combined cooking unit') !== false) $price = 140000;
-                                                    elseif (stripos($img, 'combined') !== false) $price = 130000;
-                                                    elseif (stripos($img, 'commercial fridge') !== false) $price = 190000;
-                                                    elseif (stripos($img, 'deep fryer') !== false) $price = 20000;
-                                                    elseif (stripos($img, 'double sink') !== false) $price = 40000;
-                                                    elseif (stripos($img, 'ags cooker double bowl') !== false) $price = 55000;
-                                                    elseif (stripos($img, 'grease trap') !== false) $price = 35000;
-                                                    elseif (stripos($img, 'hospital sluice sink') !== false) $price = 60000;
-                                                    elseif (stripos($img, 'kitchen hood structure') !== false) $price = 85000;
-                                                    elseif (stripos($img, 'scrub sink') !== false) $price = 35000;
-                                                    elseif (stripos($img, 'sigle sink') !== false) $price = 25000;
-                                                    elseif (stripos($img, 'sluice sink') !== false) $price = 40000;
-                                                    elseif (stripos($img, 'steel sluice sink') !== false) $price = 55000;
-                                                } elseif ($folder === 'milk') {
-                                                    if (stripos($img, 'ventilated fridge') !== false) $price = 180000;
-                                                } elseif ($folder === 'water') {
-                                                    if (stripos($img, 'ventilated fridge') !== false) $price = 250000;
-                                                }
-                                                ?>
-                                                <p class="h4 text-primary">KSh <span class="product-price"><?php echo number_format($price, 2); ?></span></p>
-                                                <button class="btn btn-primary w-100 add-to-cart" data-id="<?php echo $folder . '-' . $img; ?>" data-name="<?php echo $img; ?>" data-price="<?php echo $price; ?>">
+                                                <p class="h4 text-primary">KSh <span class="product-price"><?php echo number_format($product['price'], 2); ?></span></p>
+                                                <button class="btn btn-primary w-100 add-to-cart" data-id="<?php echo $product['id']; ?>" data-name="<?php echo htmlspecialchars($product['name']); ?>" data-price="<?php echo $product['price']; ?>">
                                                     <i class="fas fa-cart-plus me-2"></i>Add to Cart
                                                 </button>
                                             </div>
@@ -259,11 +267,10 @@ try {
                                     </div>
                                 </div>
                             <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </section>
-                <?php endforeach; ?>
-            </main>
+                        </div>
+                    </section>
+                    <?php endforeach; ?>
+                </main>
         </div>
     </div>
     <!-- End Sidebar and Categories -->
